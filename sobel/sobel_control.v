@@ -148,18 +148,21 @@ dffre #(IOBUF_ADDR_WIDTH)               buf_write_offset_r (                    
 // *** Row address increment ***
 // The value of this signal specifies the width of an output row.
 // Insert your code here.
-assign      buf_write_row_incr                  = 'h0;
+// assign      buf_write_row_incr                  = 'h0;
+assign      buf_write_row_incr                  = control_n_rows - 2;
 
 // *** Column strip increment ***
 // The value of this signal specifies the start column of the next column strip.
 // Insert your code here.
-assign      next_col_strip                      = 'h0;
+// assign      next_col_strip                      = 'h0;
+assign      next_col_strip                      = col_strip + `NUM_SOBEL_ACCELERATORS;
 
 // *** Column strip maximum ***
 // The value of this signal is the termination condition.
 // What is the highest possible value of col_strip that indicates there are still more input pixels to process?
 // Insert your code here.
-assign      max_col_strip                       = 'h0;
+// assign      max_col_strip                       = 'h0;
+assign      max_col_strip                       = control_n_cols - `NUM_SOBEL_ACCELERATORS;
 
 generate
 for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
@@ -167,7 +170,9 @@ for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
 // *** Write enable ***
 // If pixel_write_en[i] is set to 1, this tells the memory system that the current pixel at index i from the Sobel accelerator contains valid data to be written.
 // Make sure to only set it to 1 when the Sobel accelerator is producing valid data at that pixel position.
-assign      pixel_write_en[i]                   = 'h0;
+// assign      pixel_write_en[i]                   = 'h0;
+// assign      pixel_write_en[i]                   = 'h1;
+assign      pixel_write_en[i]                   = col_strip + i < max_col_strip ? 1 : 0;
 
 end
 endgenerate
@@ -196,7 +201,7 @@ always @ (*) begin
             if (go) begin
                 // *** Row 1 loading state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                state_next                      = STATE_LOADING_2;
             end
         end
         
@@ -204,7 +209,7 @@ always @ (*) begin
             if (go) begin
                 // *** Row 2 loading state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                state_next                      = STATE_LOADING_3;
             end
         end
         
@@ -212,7 +217,7 @@ always @ (*) begin
             if (go) begin
                 // *** Row 3 loading state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                state_next                      = STATE_PROCESSING_CALC;
             end
         end
         
@@ -220,7 +225,11 @@ always @ (*) begin
             if (go) begin
                 // *** Calculation state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                if (next_row_counter == control_n_rows - 2) begin
+                    state_next                      = STATE_PROCESSING_LOADSS_LAST;
+                end else begin
+                    state_next                      = STATE_PROCESSING_LOAD;
+                end
             end
         end
         
@@ -228,7 +237,7 @@ always @ (*) begin
             if (go) begin
                 // *** Next row loading state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                state_next                      = STATE_PROCESSING_CALC;
             end
         end
         
@@ -236,7 +245,7 @@ always @ (*) begin
             if (go) begin
                 // *** Last-row-in-column-strip calculation state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                state_next                      = STATE_LOADING_1;
             end
         end
         
@@ -244,7 +253,7 @@ always @ (*) begin
             if (go) begin
                 // *** Last-row-in-column loading state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_ERROR;
+                state_next                      = STATE_PROCESSING_CALC;
             end
         end
         
