@@ -245,7 +245,11 @@ always @ (*) begin
             if (go) begin
                 // *** Last-row-in-column-strip calculation state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_LOADING_1;
+                if (next_col_strip > max_col_strip) begin
+                    state_next = STATE_PROCESSING_DONE;
+                end else begin
+                    state_next                      = STATE_LOADING_1;
+                end
             end
         end
         
@@ -253,7 +257,7 @@ always @ (*) begin
             if (go) begin
                 // *** Last-row-in-column loading state ***
                 // Insert your state transition code here.
-                state_next                      = STATE_PROCESSING_CALC;
+                state_next                      = STATE_PROCESSING_CALC_LAST;
             end
         end
         
@@ -293,62 +297,62 @@ end
 // Insert your code where indicated.
 always @ (*) begin
     // What is the correct default behavior? Place your command here.
-    row_op                                      = 'h0;
+    row_op                                      = `SOBEL_ROW_OP_HOLD;
     
     case (state)
         STATE_WAIT: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_HOLD;
         end
         
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_SHIFT_ROW;
         end
         
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_SHIFT_ROW;
         end
         
         STATE_LOADING_3: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_SHIFT_ROW;
         end
         
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_HOLD;
         end
         
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_SHIFT_ROW;
         end
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_HOLD;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_SHIFT_ROW;
         end
         
         STATE_PROCESSING_DONE: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_HOLD;
         end
         
         STATE_ERROR: begin
             // What happens in case of an error? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_HOLD;
         end
         
         default: begin
             // What happens in the default (unexpected) case? Insert your code here. If nothing changes, you can remove this case completely.
-            row_op                              = 'h0;
+            row_op                              = `SOBEL_ROW_OP_HOLD;
         end
     endcase
 end
@@ -370,7 +374,7 @@ always @ (*) begin
         
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter;
         end
         
         STATE_LOADING_2: begin
@@ -390,7 +394,7 @@ always @ (*) begin
         
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter + 1;
         end
         
         STATE_PROCESSING_CALC_LAST: begin
@@ -400,7 +404,7 @@ always @ (*) begin
         
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter + 1;
         end
         
         STATE_PROCESSING_DONE: begin
