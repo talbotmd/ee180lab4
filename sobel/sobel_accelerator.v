@@ -27,7 +27,7 @@ module sobel_accelerator
 // Internal signals
 reg     [`SOBEL_ODATA_WIDTH-1:0]                sobel_out;                          // the accelerator's output, N pixels wide
 wire    [`SOBEL_IDATA_WIDTH-1:0]                row1, row2, row3;                   // current row pixel values for calculating the Sobel convolution
-reg [11:0] sobel_sum[`NUM_SOBEL_ACCELERATORS-1:0];                                  // for holding the complete (sobel_sum) and partial (conv[xy]*) Sobel convolution sums
+reg [11:0] sobel_sum[`NUM_SOBEL_ACCELERATORS-1:0], temp_sum[`NUM_SOBEL_ACCELERATORS-1:0];                                  // for holding the complete (sobel_sum) and partial (conv[xy]*) Sobel convolution sums
 reg [11:0] convx[`NUM_SOBEL_ACCELERATORS-1:0], convx11 [`NUM_SOBEL_ACCELERATORS-1:0], convx12 [`NUM_SOBEL_ACCELERATORS-1:0], convx13 [`NUM_SOBEL_ACCELERATORS-1:0], convx31 [`NUM_SOBEL_ACCELERATORS-1:0], convx32 [`NUM_SOBEL_ACCELERATORS-1:0], convx33 [`NUM_SOBEL_ACCELERATORS-1:0];
 reg [11:0] convy[`NUM_SOBEL_ACCELERATORS-1:0], convy11 [`NUM_SOBEL_ACCELERATORS-1:0], convy13 [`NUM_SOBEL_ACCELERATORS-1:0], convy21 [`NUM_SOBEL_ACCELERATORS-1:0], convy23 [`NUM_SOBEL_ACCELERATORS-1:0], convy31 [`NUM_SOBEL_ACCELERATORS-1:0], convy33 [`NUM_SOBEL_ACCELERATORS-1:0];
 
@@ -75,7 +75,9 @@ generate
             
             // Combine the values above in a way that faithfully implements Sobel.
             // You may declare more signals as needed.
-            convx[c]   = 'h0; 
+            // convx[c]   = 'h0; 
+            convx[c] = convx11[c] + convx12[c] + convx13[c] - convx31[c] - convx32[c] - convx33[c];
+
             
             // *** Calculation of the vertical Sobel convolution ***
             // Each "convy" value corresponds to an input to that calculation, a different pixel in the 9-by-9 grid.
@@ -89,11 +91,16 @@ generate
             
             // Combine the values above in a way that faithfully implements Sobel.
             // You may declare more signals as needed.
-            convy[c]   = 'h0;
+            // convy[c]   = 'h0;
+            convy[c] = convy11[c] - convy13[c] + convy21[c] - convy23[c] + convy31[c] - convy33[c];
+
             
             // *** Calculation of the overall Sobel convolution result ***
             // The horizontal and vertical convolutions must be combined in a way that faithfully implements the Sobel convolution algorithm.
-            sobel_sum[c] = 'h0;
+            // sobel_sum[c] = 'h0;
+
+            temp_sum[c] = convx[c] < 0 ? (convy[c] < 0 ? (-convx[c] - convy[c]) : -convx[c] + convy[c]) : (convy[c] < 0 ? (convx[c] - convy[c]) : -convx[c] + convy[c]);
+            sobel_sum[c] = temp_out > 255 ? 255 : temp_sum;
             
             // *** Writing out the Sobel convolution result ***
             // This line should place the output of the Sobel convolution (the lines above) into the correct location in the output byte vector.
