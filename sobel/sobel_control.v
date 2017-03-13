@@ -162,7 +162,8 @@ assign      next_col_strip                      = col_strip + `NUM_SOBEL_ACCELER
 // What is the highest possible value of col_strip that indicates there are still more input pixels to process?
 // Insert your code here.
 // assign      max_col_strip                       = 'h0;
-assign      max_col_strip                       = control_n_cols - `NUM_SOBEL_ACCELERATORS;
+// assign      max_col_strip                       = control_n_cols - `NUM_SOBEL_ACCELERATORS;
+assign      max_col_strip                       = control_n_cols - 2;
 
 generate
 for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
