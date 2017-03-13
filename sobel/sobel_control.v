@@ -404,7 +404,7 @@ always @ (*) begin
 
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = row_counter + 1;
+            row_counter_next                    = 'h0;
         end
 
         STATE_PROCESSING_DONE: begin
@@ -439,7 +439,7 @@ always @ (*) begin
             // What should the starting value be? Insert your code here.
             col_strip_next                      = 'h0;
         end
-        
+
         /*
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
