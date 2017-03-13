@@ -149,7 +149,7 @@ dffre #(IOBUF_ADDR_WIDTH)               buf_write_offset_r (                    
 // The value of this signal specifies the width of an output row.
 // Insert your code here.
 // assign      buf_write_row_incr                  = 'h0;
-assign      buf_write_row_incr                  = control_n_rows - 2;
+assign      buf_write_row_incr                  = control_n_cols - 2;
 
 // *** Column strip increment ***
 // The value of this signal specifies the start column of the next column strip.
@@ -379,17 +379,17 @@ always @ (*) begin
         
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter;
         end
         
         STATE_LOADING_3: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter;
         end
         
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter;
         end
         
         STATE_PROCESSING_LOADSS: begin
@@ -399,7 +399,7 @@ always @ (*) begin
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
@@ -440,6 +440,7 @@ always @ (*) begin
             col_strip_next                      = 'h0;
         end
         
+        /*
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
             col_strip_next                      = 'h0;
@@ -464,15 +465,16 @@ always @ (*) begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
             col_strip_next                      = 'h0;
         end
+        */
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip + `NUM_SOBEL_ACCELERATORS;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
         
         STATE_PROCESSING_DONE: begin
@@ -487,7 +489,7 @@ always @ (*) begin
         
         default: begin
             // What happens in the default (unexpected) case? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
     endcase
 end
@@ -587,47 +589,47 @@ always @ (*) begin
         
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_LOADING_3: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = row_counter * buf_write_row_incr + col_strip;
         end
         
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = next_col_strip;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_PROCESSING_DONE: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_ERROR: begin
             // What happens in case of an error? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         default: begin
