@@ -99,7 +99,7 @@ generate
             // The horizontal and vertical convolutions must be combined in a way that faithfully implements the Sobel convolution algorithm.
             // sobel_sum[c] = 'h0;
 
-            temp_sum[c] = convx[c] < 0 ? (convy[c] < 0 ? (-convx[c] - convy[c]) : -convx[c] + convy[c]) : (convy[c] < 0 ? (convx[c] - convy[c]) : -convx[c] + convy[c]);
+            temp_sum[c] = convx[c][11]? (convy[c][11] ? (-convx[c] - convy[c]) : -convx[c] + convy[c]) : (convy[c][11] ? (convx[c] - convy[c]) : convx[c] + convy[c]);
             sobel_sum[c] = temp_sum[c] > 255 ? 255 : temp_sum[c];
             
             // *** Writing out the Sobel convolution result ***
