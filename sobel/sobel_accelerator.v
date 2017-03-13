@@ -100,7 +100,7 @@ generate
             // sobel_sum[c] = 'h0;
 
             temp_sum[c] = convx[c] < 0 ? (convy[c] < 0 ? (-convx[c] - convy[c]) : -convx[c] + convy[c]) : (convy[c] < 0 ? (convx[c] - convy[c]) : -convx[c] + convy[c]);
-            sobel_sum[c] = temp_out > 255 ? 255 : temp_sum;
+            sobel_sum[c] = temp_sum[c] > 255 ? 255 : temp_sum[c];
             
             // *** Writing out the Sobel convolution result ***
             // This line should place the output of the Sobel convolution (the lines above) into the correct location in the output byte vector.

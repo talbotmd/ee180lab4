@@ -225,10 +225,10 @@ always @ (*) begin
             if (go) begin
                 // *** Calculation state ***
                 // Insert your state transition code here.
-                if (next_row_counter == control_n_rows - 2) begin
+                if (row_counter_next == control_n_rows - 2) begin
                     state_next                      = STATE_PROCESSING_LOADSS_LAST;
                 end else begin
-                    state_next                      = STATE_PROCESSING_LOAD;
+                    state_next                      = STATE_PROCESSING_LOADSS;
                 end
             end
         end
@@ -399,12 +399,12 @@ always @ (*) begin
 
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = row_counter;
+            row_counter_next                    = 'h0;
         end
 
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            row_counter_next                    = 'h0;
+            row_counter_next                    = row_counter + 1;
         end
 
         STATE_PROCESSING_DONE: begin
@@ -439,33 +439,31 @@ always @ (*) begin
             // What should the starting value be? Insert your code here.
             col_strip_next                      = 'h0;
         end
-
-        /*
+        
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
 
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
 
         STATE_LOADING_3: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
 
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
 
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
-        */
 
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
@@ -479,7 +477,7 @@ always @ (*) begin
 
         STATE_PROCESSING_DONE: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
 
         STATE_ERROR: begin
@@ -510,7 +508,7 @@ always @ (*) begin
             if (go) begin
                 // Once the control signal is asserted, does something need to happen?
                 // Think about what the next state is going to be and what data the accelerator expects to get.
-                buf_read_offset_next            = (row_counter *stop2sctl_image_n_rows) + column_strip;
+                buf_read_offset_next            = (row_counter * control_n_cols) + col_strip;
             end else begin
                 // If there is no control signal, just read from the beginning of the image.
                 // This part is provided for you.
@@ -520,12 +518,12 @@ always @ (*) begin
 
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + stop2sctl_image_n_rows + column_strip;
+            buf_read_offset_next                = (row_counter + 1) * control_n_cols + col_strip;
         end
 
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + stop2sctl_image_n_rows + column_strip;
+            buf_read_offset_next                = ((row_counter + 2) + control_n_cols) + col_strip;
         end
 
         STATE_LOADING_3: begin
@@ -535,7 +533,7 @@ always @ (*) begin
 
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + stop2sctl_image_n_rows + column_strip;
+            buf_read_offset_next                = ((row_counter + 2)) * control_n_cols + col_strip;
         end
 
         STATE_PROCESSING_LOADSS: begin
@@ -545,7 +543,7 @@ always @ (*) begin
 
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = (row_counter * stop2sctl_image_n_rows) + column_strip;
+            buf_read_offset_next                = row_counter_next * control_n_cols + next_col_strip;
         end
 
         STATE_PROCESSING_LOADSS_LAST: begin
@@ -604,12 +602,12 @@ always @ (*) begin
 
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = row_counter * buf_write_row_incr + col_strip;
+            buf_write_offset_next               = buf_write_offset;
         end
 
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = buf_write_offset;
+            buf_write_offset_next               = row_counter_next * buf_write_row_incr + col_strip;
         end
 
         STATE_PROCESSING_CALC_LAST: begin
@@ -619,7 +617,7 @@ always @ (*) begin
 
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = buf_write_offset;
+            buf_write_offset_next               = row_counter_next * buf_write_row_incr + col_strip;
         end
 
         STATE_PROCESSING_DONE: begin
