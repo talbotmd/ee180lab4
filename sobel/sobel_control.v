@@ -518,12 +518,12 @@ always @ (*) begin
 
         STATE_LOADING_1: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = (row_counter *stop2sctl_image_n_rows) + column_strip;
+            buf_read_offset_next                = buf_read_offset + stop2sctl_image_n_rows + column_strip;
         end
 
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = (row_counter *stop2sctl_image_n_rows) + column_strip;
+            buf_read_offset_next                = buf_read_offset + stop2sctl_image_n_rows + column_strip;
         end
 
         STATE_LOADING_3: begin
@@ -533,7 +533,7 @@ always @ (*) begin
 
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset+ column_strip;
+            buf_read_offset_next                = buf_read_offset + stop2sctl_image_n_rows + column_strip;
         end
 
         STATE_PROCESSING_LOADSS: begin
@@ -543,7 +543,7 @@ always @ (*) begin
 
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = (row_counter *stop2sctl_image_n_rows) + column_strip
+            buf_read_offset_next                = (row_counter * stop2sctl_image_n_rows) + column_strip;
         end
 
         STATE_PROCESSING_LOADSS_LAST: begin
